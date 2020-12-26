@@ -11,7 +11,7 @@ class DBHelper {
       path.join(dbPath, DB_NAME),
       version: 1,
       onCreate: (db, version) => db.execute(
-        'CREATE TABLE $TB_NAME_PLACES(id TEXT PRIMARY KEY, title TEXT, image TEXT)',
+        'CREATE TABLE $TB_NAME_PLACES(id TEXT PRIMARY KEY, title TEXT, image TEXT, location_lat REAL, location_lng REAL, address TEXT)',
       ),
     );
   }

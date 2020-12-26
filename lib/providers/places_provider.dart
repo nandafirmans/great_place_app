@@ -3,25 +3,49 @@ import 'dart:io';
 import 'package:flutter/widgets.dart';
 import 'package:great_place_app/models/place.dart';
 import 'package:great_place_app/utilities/db_helper.dart';
+import 'package:great_place_app/utilities/location_helper.dart';
 
 class PlacesProvider extends ChangeNotifier {
   List<Place> _items = [];
 
   List<Place> get items => [..._items];
 
-  void addPlace(String title, File pickedImage) {
+  Place findById(String id) {
+    return _items.firstWhere((p) => p.id == id);
+  }
+
+  Future<void> addPlace(
+    String title,
+    File pickedImage,
+    PlaceLocation pickedLocation,
+  ) async {
+    final address = await LocationHelper.getPlaceAddress(
+      latitude: pickedLocation.latitude,
+      longitude: pickedLocation.longitude,
+    );
+    pickedLocation = PlaceLocation(
+      latitude: pickedLocation.latitude,
+      longitude: pickedLocation.longitude,
+      address: address,
+    );
     final newPlace = Place(
       id: DateTime.now().toString(),
       title: title,
       image: pickedImage,
-      location: null,
+      location: pickedLocation,
     );
+
     _items.add(newPlace);
+
     notifyListeners();
+
     DBHelper.insert(DBHelper.TB_NAME_PLACES, {
       'id': newPlace.id,
       'title': newPlace.title,
       'image': newPlace.image.path,
+      'location_lat': newPlace.location.latitude,
+      'location_lng': newPlace.location.longitude,
+      'address': newPlace.location.address,
     });
   }
 
@@ -33,7 +57,11 @@ class PlacesProvider extends ChangeNotifier {
             id: p['id'],
             title: p['title'],
             image: File(p['image']),
-            location: null,
+            location: PlaceLocation(
+              latitude: p['location_lat'],
+              longitude: p['location_lng'],
+              address: p['address'],
+            ),
           ),
         )
         .toList();

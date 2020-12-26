@@ -44,9 +44,7 @@ class _ImageInputState extends State<ImageInput> {
   Widget build(BuildContext context) {
     return Row(
       children: [
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 15),
-          child: Container(
+        Container(
             height: 100,
             width: 130,
             decoration: BoxDecoration(
@@ -68,7 +66,6 @@ class _ImageInputState extends State<ImageInput> {
                     textAlign: TextAlign.center,
                   ),
           ),
-        ),
         const SizedBox(width: 10),
         Expanded(
           child: FlatButton.icon(

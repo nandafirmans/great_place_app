@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:great_place_app/models/place.dart';
 import 'package:great_place_app/providers/places_provider.dart';
 import 'package:great_place_app/widgets/image_input.dart';
 import 'package:great_place_app/widgets/location_input.dart';
@@ -16,17 +17,27 @@ class AddPlaceScreen extends StatefulWidget {
 class _AddPlaceScreenState extends State<AddPlaceScreen> {
   final _titleController = TextEditingController();
   File _pickedImage;
+  PlaceLocation _pickedLocation;
 
   void _handleOnSelectImage(File pickedImage) {
     _pickedImage = pickedImage;
   }
 
+  void _handleOnSelectLocation({double latitude, double longitude}) {
+    _pickedLocation = PlaceLocation(
+      latitude: latitude,
+      longitude: longitude,
+    );
+  }
+
   void _savePlace() {
     final title = _titleController.text;
-    if (title.isEmpty || _pickedImage == null) {
+    if (title.isEmpty || _pickedImage == null || _pickedLocation == null) {
       return;
     }
-    context.read<PlacesProvider>().addPlace(title, _pickedImage);
+    context
+        .read<PlacesProvider>()
+        .addPlace(title, _pickedImage, _pickedLocation);
     Navigator.of(context).pop();
   }
 
@@ -41,12 +52,13 @@ class _AddPlaceScreenState extends State<AddPlaceScreen> {
         children: [
           Expanded(
             child: SingleChildScrollView(
-              padding: EdgeInsets.all(10),
+              padding: EdgeInsets.all(15),
               child: Column(
                 children: [
                   TextField(
                     decoration: InputDecoration(
                       labelText: 'Title',
+                      border: OutlineInputBorder(),
                     ),
                     controller: _titleController,
                   ),
@@ -55,7 +67,9 @@ class _AddPlaceScreenState extends State<AddPlaceScreen> {
                     onSelectImage: _handleOnSelectImage,
                   ),
                   const SizedBox(height: 20),
-                  LocationInput(),
+                  LocationInput(
+                    onSelectLocation: _handleOnSelectLocation,
+                  ),
                 ],
               ),
             ),
